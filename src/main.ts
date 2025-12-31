@@ -15,6 +15,9 @@ window.addEventListener('resize', resize);
 resize();
 
 const state = new State(canvas);
+
+await state.init();
+
 let lastTime = 0;
 
 function loop(currentTime: number) {
