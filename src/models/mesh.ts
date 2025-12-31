@@ -55,7 +55,7 @@ export class Mesh implements IDynamic, ILoadable, ITranslatable {
         const fileExtension = fileName.split('.').pop()?.toLowerCase();
 
         if (fileExtension === 'json') {
-            const response = await fetch(`/meshes/${fileName}`);
+            const response = await fetch(`meshes/${fileName}`);
             const data = await response.json();
             // Load points
             this.points = data.points.map(
@@ -65,7 +65,7 @@ export class Mesh implements IDynamic, ILoadable, ITranslatable {
             // Load triangles
             this.triangles = data.triangles;
         } else if (fileExtension === 'obj') {
-            const response = await fetch(`/meshes/${fileName}`);
+            const response = await fetch(`meshes/${fileName}`);
             const text = await response.text();
             const lines = text.split('\n').map((line) => line.trim());
 
