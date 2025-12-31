@@ -1,6 +1,7 @@
 import type { IDynamic } from '../interfaces/dynamic.interface';
 import type { ITranslatable } from '../interfaces/geometry.interface';
 import type { ILoadable } from '../interfaces/loadable.interface';
+import type { Inputs } from './inputs';
 import { Point } from './point';
 
 export class Mesh implements IDynamic, ILoadable, ITranslatable {
@@ -26,17 +27,25 @@ export class Mesh implements IDynamic, ILoadable, ITranslatable {
     }
 
     save(fileName: string): void {
-        // Trigger file download
-        const blob = new Blob(
-            [
-                JSON.stringify({
-                    points: this.points,
-                    edges: this.edges,
-                    triangles: this.triangles,
-                }),
-            ],
-            { type: 'text/plain' }
-        );
+        let objContent = '';
+
+        // Add vertices
+        for (const point of this.points) {
+            const x = point.x.toFixed(6);
+            const y = point.y.toFixed(6);
+            const z = point.z.toFixed(6);
+            objContent += `v ${x} ${y} ${z}\n`;
+        }
+
+        // Add faces (triangles)
+        for (const triangle of this.triangles) {
+            const idx1 = triangle[0] + 1;
+            const idx2 = triangle[1] + 1;
+            const idx3 = triangle[2] + 1;
+            objContent += `f ${idx1} ${idx2} ${idx3}\n`;
+        }
+
+        const blob = new Blob([objContent], { type: 'text/plain' });
         const url = URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.href = url;
@@ -96,15 +105,26 @@ export class Mesh implements IDynamic, ILoadable, ITranslatable {
         }
     }
 
-    update(deltaTime: number): void {
+    update(deltaTime: number, inputs: Inputs): void {
+        const speed = 5;
+        const shiftMultiplier = inputs.shift ? -1 : 1;
         this.elapsedTime += deltaTime;
-        this.rotateY(deltaTime * Math.PI);
-        this.translateZ(deltaTime);
+
+        this.translateX(
+            (inputs.x ? 1 : 0) * deltaTime * shiftMultiplier * speed
+        );
+        this.translateY(
+            (inputs.y ? 1 : 0) * deltaTime * shiftMultiplier * speed
+        );
+        this.translateZ(
+            (inputs.z ? 1 : 0) * deltaTime * shiftMultiplier * speed
+        );
+
+        this.rotateY((inputs.r ? 1 : 0) * deltaTime * shiftMultiplier * speed);
 
         // Update fill style based on elapsed time
         const hue = (this.elapsedTime * this.SpectraPerSecond * 360) % 360;
         this.fillStyle = `hsla(${hue}, 100%, 50%, ${this.opacity})`;
-        // this.translateZ(deltaTime);
     }
 
     render(ctx: CanvasRenderingContext2D) {
@@ -199,6 +219,30 @@ export class Mesh implements IDynamic, ILoadable, ITranslatable {
     translateZ(amount: number): void {
         for (const point of this.points) {
             point.translateZ(amount);
+        }
+    }
+
+    rotateX(radians: number): void {
+        // Calculate cube center
+        const centerX =
+            this.points.reduce((sum, p) => sum + p.x, 0) / this.points.length;
+        const centerY =
+            this.points.reduce((sum, p) => sum + p.y, 0) / this.points.length;
+
+        const cos = Math.cos(radians);
+        const sin = Math.sin(radians);
+
+        for (const point of this.points) {
+            // Translate point to origin relative to center
+            const x = point.x - centerX;
+            const y = point.y - centerY;
+            // Apply rotation
+            const newX = x * cos - y * sin;
+            const newY = x * sin + y * cos;
+
+            // Translate back to world space
+            point.x = newX + centerX;
+            point.y = newY + centerY;
         }
     }
 
