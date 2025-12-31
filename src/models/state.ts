@@ -50,7 +50,7 @@ export class State implements IDynamic {
 
     async init(): Promise<void> {
         const teapot = new Mesh([], []);
-        await teapot.load('cube.obj');
+        await teapot.load('teapot.obj');
         teapot.translateY(-5);
         teapot.translateZ(10);
         this.dynamicChildren.push(teapot);
