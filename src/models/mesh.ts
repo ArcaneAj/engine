@@ -118,7 +118,7 @@ export class Mesh implements IDynamic, ILoadable, ITranslatable {
         this.rotateY((inputs.r ? 1 : 0) * deltaTime * shiftMultiplier * speed);
 
         // Update fill style based on elapsed time
-        const hue = (this.elapsedTime * this.SpectraPerSecond * 360) % 360;
+        const hue = (this.elapsedTime * this.SpectraPerSecond * 90) % 360;
         this.fillStyle = `hsla(${hue}, 100%, 50%, ${this.opacity})`;
     }
 
@@ -179,24 +179,24 @@ export class Mesh implements IDynamic, ILoadable, ITranslatable {
 
     rotateX(radians: number): void {
         // Calculate cube center
-        const centerX =
-            this.points.reduce((sum, p) => sum + p.x, 0) / this.points.length;
         const centerY =
             this.points.reduce((sum, p) => sum + p.y, 0) / this.points.length;
+        const centerZ =
+            this.points.reduce((sum, p) => sum + p.z, 0) / this.points.length;
 
         const cos = Math.cos(radians);
         const sin = Math.sin(radians);
 
         for (const point of this.points) {
             // Translate point to origin relative to center
-            const x = point.x - centerX;
             const y = point.y - centerY;
+            const z = point.z - centerZ;
             // Apply rotation
-            const newX = x * cos - y * sin;
-            const newY = x * sin + y * cos;
+            const newY = y * cos - z * sin;
+            const newZ = y * sin + z * cos;
 
             // Translate back to world space
-            point.x = newX + centerX;
+            point.z = newZ + centerZ;
             point.y = newY + centerY;
         }
     }
@@ -223,6 +223,31 @@ export class Mesh implements IDynamic, ILoadable, ITranslatable {
             // Translate back to world space
             point.x = newX + centerX;
             point.z = newZ + centerZ;
+        }
+    }
+
+    rotateZ(radians: number): void {
+        // Calculate cube center
+        const centerX =
+            this.points.reduce((sum, p) => sum + p.x, 0) / this.points.length;
+        const centerY =
+            this.points.reduce((sum, p) => sum + p.y, 0) / this.points.length;
+
+        const cos = Math.cos(radians);
+        const sin = Math.sin(radians);
+
+        for (const point of this.points) {
+            // Translate point to origin relative to center
+            const x = point.x - centerX;
+            const y = point.y - centerY;
+
+            // Apply rotation
+            const newX = x * cos - y * sin;
+            const newY = x * sin + y * cos;
+
+            // Translate back to world space
+            point.x = newX + centerX;
+            point.y = newY + centerY;
         }
     }
 }

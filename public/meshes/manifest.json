@@ -1,0 +1,34 @@
+{
+  "meshes": [
+    {
+      "name": "Teapot",
+      "file": "teapot.obj",
+      "position": { "x": 0, "y": -1, "z": 10 },
+      "rotation": { "x": 0, "y": 0, "z": 0 }
+    },
+    {
+      "name": "Cube",
+      "file": "cube.obj",
+      "position": { "x": 0, "y": 0, "z": 0 },
+      "rotation": { "x": 0, "y": -0.5, "z": 0 }
+    },
+    {
+      "name": "Pumpkin",
+      "file": "pumpkin.obj",
+      "position": { "x": 0, "y": 0, "z": 0 },
+      "rotation": { "x": 1.6, "y": 0, "z": 0 }
+    },
+    {
+      "name": "Cow",
+      "file": "cow.obj",
+      "position": { "x": 0, "y": 0, "z": 10 },
+      "rotation": { "x": 0, "y": 0, "z": 0 }
+    },
+    {
+      "name": "Teddy",
+      "file": "teddy.obj",
+      "position": { "x": 0, "y": 0, "z": 50 },
+      "rotation": { "x": 0, "y": 2.8, "z": 0 }
+    }
+  ]
+}

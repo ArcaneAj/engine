@@ -1,7 +1,8 @@
+import type { ICartesian } from '../interfaces/cartesian.interface';
 import type { ITranslatable } from '../interfaces/geometry.interface';
 import { ScreenPoint } from './screen-point';
 
-export class Point implements ITranslatable {
+export class Point implements ITranslatable, ICartesian {
     x: number;
     y: number;
     z: number;
