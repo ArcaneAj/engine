@@ -6,7 +6,6 @@ import { Point } from './point';
 
 export class Mesh implements IDynamic, ILoadable, ITranslatable {
     points: Point[];
-    edges: number[][];
     triangles: number[][];
     private fillStyle: string;
     private elapsedTime: number = 0;
@@ -16,12 +15,10 @@ export class Mesh implements IDynamic, ILoadable, ITranslatable {
 
     constructor(
         points: Point[],
-        edges: number[][],
         triangles: number[][],
         fillStyle: string = 'rgba(0, 0, 255, 0.5)'
     ) {
         this.points = points;
-        this.edges = edges;
         this.triangles = triangles;
         this.fillStyle = fillStyle;
     }
@@ -65,8 +62,6 @@ export class Mesh implements IDynamic, ILoadable, ITranslatable {
                 (p: { x: number; y: number; z: number }) =>
                     new Point(p.x, p.y, p.z)
             );
-            // Load edges
-            this.edges = data.edges;
             // Load triangles
             this.triangles = data.triangles;
         } else if (fileExtension === 'obj') {
@@ -128,12 +123,6 @@ export class Mesh implements IDynamic, ILoadable, ITranslatable {
     }
 
     render(ctx: CanvasRenderingContext2D) {
-        for (const edge of this.edges) {
-            const point1 = this.points[edge[0]];
-            const point2 = this.points[edge[1]];
-            this.drawLine(ctx, point1, point2);
-        }
-
         for (const triangle of this.triangles) {
             const point1 = this.points[triangle[0]];
             const point2 = this.points[triangle[1]];
@@ -168,40 +157,6 @@ export class Mesh implements IDynamic, ILoadable, ITranslatable {
         ctx.lineTo(screenPoint3.x, screenPoint3.y);
         ctx.closePath();
         ctx.fill();
-    }
-
-    drawLine(
-        ctx: CanvasRenderingContext2D,
-        point1: Point,
-        point2: Point
-    ): void {
-        const screenPoint1 = point1.toScreen(
-            ctx.canvas.width,
-            ctx.canvas.height
-        );
-        const screenPoint2 = point2.toScreen(
-            ctx.canvas.width,
-            ctx.canvas.height
-        );
-
-        ctx.strokeStyle = 'black';
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.moveTo(screenPoint1.x, screenPoint1.y);
-        ctx.lineTo(screenPoint2.x, screenPoint2.y);
-        ctx.stroke();
-    }
-
-    drawPoint(ctx: CanvasRenderingContext2D, point: Point, size: number): void {
-        const screenPoint = point.toScreen(ctx.canvas.width, ctx.canvas.height);
-        const halfSize = size / 2;
-        ctx.fillStyle = 'red';
-        ctx.fillRect(
-            screenPoint.x - halfSize,
-            screenPoint.y - halfSize,
-            size,
-            size
-        );
     }
 
     translateX(amount: number): void {
